@@ -4,7 +4,7 @@ import '../services/appointment_service.dart';
 
 class AppointmentProvider with ChangeNotifier {
   final AppointmentService _appointmentService = AppointmentService();
-  
+
   List<Appointment> _appointments = [];
   Appointment? _selectedAppointment;
   bool _isLoading = false;
@@ -18,17 +18,22 @@ class AppointmentProvider with ChangeNotifier {
 
   // Filter appointments by status
   List<Appointment> getAppointmentsByStatus(AppointmentStatus status) {
-    return _appointments.where((appointment) => 
-        appointment.appointmentStatus == status).toList();
+    return _appointments
+        .where((appointment) => appointment.appointmentStatus == status)
+        .toList();
   }
 
   // Get today's appointments
   List<Appointment> getTodaysAppointments() {
     final today = DateTime.now();
-    return _appointments.where((appointment) =>
-        appointment.hari.year == today.year &&
-        appointment.hari.month == today.month &&
-        appointment.hari.day == today.day).toList();
+    return _appointments
+        .where(
+          (appointment) =>
+              appointment.hari.year == today.year &&
+              appointment.hari.month == today.month &&
+              appointment.hari.day == today.day,
+        )
+        .toList();
   }
 
   // Set loading state
@@ -53,7 +58,7 @@ class AppointmentProvider with ChangeNotifier {
   Future<void> fetchAppointments() async {
     _setLoading(true);
     _setError(null);
-    
+
     try {
       _appointments = await _appointmentService.getAppointments();
       notifyListeners();
@@ -68,7 +73,7 @@ class AppointmentProvider with ChangeNotifier {
   Future<void> fetchAppointmentById(int id) async {
     _setLoading(true);
     _setError(null);
-    
+
     try {
       _selectedAppointment = await _appointmentService.getAppointmentById(id);
       notifyListeners();
@@ -90,7 +95,7 @@ class AppointmentProvider with ChangeNotifier {
   }) async {
     _setLoading(true);
     _setError(null);
-    
+
     try {
       final appointmentData = {
         'namaPemohon': namaPemohon,
@@ -102,7 +107,9 @@ class AppointmentProvider with ChangeNotifier {
         'status': 'pending',
       };
 
-      final newAppointment = await _appointmentService.createAppointment(appointmentData);
+      final newAppointment = await _appointmentService.createAppointment(
+        appointmentData,
+      );
       _appointments.add(newAppointment);
       notifyListeners();
       return true;
@@ -115,13 +122,21 @@ class AppointmentProvider with ChangeNotifier {
   }
 
   // Update appointment
-  Future<bool> updateAppointment(int id, Map<String, dynamic> appointmentData) async {
+  Future<bool> updateAppointment(
+    int id,
+    Map<String, dynamic> appointmentData,
+  ) async {
     _setLoading(true);
     _setError(null);
-    
+
     try {
-      final updatedAppointment = await _appointmentService.updateAppointment(id, appointmentData);
-      final index = _appointments.indexWhere((appointment) => appointment.id == id);
+      final updatedAppointment = await _appointmentService.updateAppointment(
+        id,
+        appointmentData,
+      );
+      final index = _appointments.indexWhere(
+        (appointment) => appointment.id == id,
+      );
       if (index != -1) {
         _appointments[index] = updatedAppointment;
         notifyListeners();
@@ -139,7 +154,7 @@ class AppointmentProvider with ChangeNotifier {
   Future<bool> deleteAppointment(int id) async {
     _setLoading(true);
     _setError(null);
-    
+
     try {
       final success = await _appointmentService.deleteAppointment(id);
       if (success) {
@@ -159,10 +174,13 @@ class AppointmentProvider with ChangeNotifier {
   Future<bool> updateAppointmentStatus(int id, String status) async {
     _setLoading(true);
     _setError(null);
-    
+
     try {
-      final updatedAppointment = await _appointmentService.updateAppointmentStatus(id, status);
-      final index = _appointments.indexWhere((appointment) => appointment.id == id);
+      final updatedAppointment = await _appointmentService
+          .updateAppointmentStatus(id, status);
+      final index = _appointments.indexWhere(
+        (appointment) => appointment.id == id,
+      );
       if (index != -1) {
         _appointments[index] = updatedAppointment;
         notifyListeners();
@@ -174,5 +192,47 @@ class AppointmentProvider with ChangeNotifier {
     } finally {
       _setLoading(false);
     }
+  }
+
+  // Fetch appointments by status dari API
+  Future<void> fetchAppointmentsByStatusFromAPI(String status) async {
+    _setLoading(true);
+    _setError(null);
+
+    try {
+      _appointments = await _appointmentService.getAppointmentsByStatus(status);
+      notifyListeners();
+    } catch (e) {
+      _setError(e.toString());
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  // Fetch appointments by profesor dari API
+  Future<void> fetchAppointmentsByProfesorFromAPI(String namaProfesor) async {
+    _setLoading(true);
+    _setError(null);
+
+    try {
+      _appointments = await _appointmentService.getAppointmentsByProfesor(
+        namaProfesor,
+      );
+      notifyListeners();
+    } catch (e) {
+      _setError(e.toString());
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  // Get unique professors dari appointments yang sudah diload
+  List<String> getUniqueProfessors() {
+    final professors = _appointments
+        .map((appointment) => appointment.namaProfesor)
+        .toSet()
+        .toList();
+    professors.sort();
+    return professors;
   }
 }

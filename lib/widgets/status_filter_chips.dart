@@ -27,12 +27,14 @@ class StatusFilterChips extends StatelessWidget {
                 onStatusSelected(null);
               },
               backgroundColor: Colors.grey[100],
-              selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+              selectedColor: Theme.of(
+                context,
+              ).colorScheme.primary.withOpacity(0.2),
               checkmarkColor: Theme.of(context).colorScheme.primary,
             ),
-            
+
             const SizedBox(width: 8),
-            
+
             // Status filter chips
             ...AppointmentStatus.values.map((status) {
               return Padding(

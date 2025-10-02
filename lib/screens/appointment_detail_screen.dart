@@ -3,14 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../models/appointment.dart';
 import '../providers/appointment_provider.dart';
+import '../utils/time_formatter.dart';
 
 class AppointmentDetailScreen extends StatelessWidget {
   final Appointment appointment;
 
-  const AppointmentDetailScreen({
-    super.key,
-    required this.appointment,
-  });
+  const AppointmentDetailScreen({super.key, required this.appointment});
 
   @override
   Widget build(BuildContext context) {
@@ -58,10 +56,14 @@ class AppointmentDetailScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: _getStatusColor(appointment.appointmentStatus).withOpacity(0.1),
+                color: _getStatusColor(
+                  appointment.appointmentStatus,
+                ).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: _getStatusColor(appointment.appointmentStatus).withOpacity(0.3),
+                  color: _getStatusColor(
+                    appointment.appointmentStatus,
+                  ).withOpacity(0.3),
                 ),
               ),
               child: Row(
@@ -81,47 +83,63 @@ class AppointmentDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  if (appointment.appointmentStatus == AppointmentStatus.pending) ...[
-                    _buildStatusButton(context, 'Approve', AppointmentStatus.approved),
+                  if (appointment.appointmentStatus ==
+                      AppointmentStatus.pending) ...[
+                    _buildStatusButton(
+                      context,
+                      'Approve',
+                      AppointmentStatus.approved,
+                    ),
                     const SizedBox(width: 8),
-                    _buildStatusButton(context, 'Reject', AppointmentStatus.rejected),
+                    _buildStatusButton(
+                      context,
+                      'Reject',
+                      AppointmentStatus.rejected,
+                    ),
                   ],
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Appointment Details
-            _buildDetailCard(
-              'Applicant Information',
-              [
-                _buildDetailRow('Name', appointment.namaPemohon),
-                _buildDetailRow('Email', appointment.emailPemohon),
-                _buildDetailRow('Phone', appointment.nomorHpPemohon),
-              ],
-            ),
-            
+            _buildDetailCard('Applicant Information', [
+              _buildDetailRow('Name', appointment.namaPemohon),
+              _buildDetailRow('Email', appointment.emailPemohon),
+              _buildDetailRow('Phone', appointment.nomorHpPemohon),
+            ]),
+
             const SizedBox(height: 16),
-            
-            _buildDetailCard(
-              'Appointment Details',
-              [
-                _buildDetailRow('Professor', appointment.namaProfesor),
-                _buildDetailRow('Date', DateFormat('EEEE, MMM dd, yyyy').format(appointment.hari)),
-                _buildDetailRow('Time', appointment.waktu),
-              ],
-            ),
-            
+
+            _buildDetailCard('Appointment Details', [
+              _buildDetailRow('Professor', appointment.namaProfesor),
+              _buildDetailRow(
+                'Date',
+                DateFormat('EEEE, MMM dd, yyyy').format(appointment.hari),
+              ),
+              _buildDetailRow(
+                'Time',
+                TimeFormatter.formatTimeForDisplay(appointment.waktu),
+              ),
+            ]),
+
             const SizedBox(height: 16),
-            
-            _buildDetailCard(
-              'Timestamps',
-              [
-                _buildDetailRow('Created', DateFormat('MMM dd, yyyy - HH:mm').format(appointment.createdAt)),
-                _buildDetailRow('Updated', DateFormat('MMM dd, yyyy - HH:mm').format(appointment.updatedAt)),
-              ],
-            ),
+
+            _buildDetailCard('Timestamps', [
+              _buildDetailRow(
+                'Created',
+                DateFormat(
+                  'MMM dd, yyyy - HH:mm',
+                ).format(appointment.createdAt),
+              ),
+              _buildDetailRow(
+                'Updated',
+                DateFormat(
+                  'MMM dd, yyyy - HH:mm',
+                ).format(appointment.updatedAt),
+              ),
+            ]),
           ],
         ),
       ),
@@ -138,10 +156,7 @@ class AppointmentDetailScreen extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             ...children,
@@ -168,20 +183,17 @@ class AppointmentDetailScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(
-                fontSize: 16,
-              ),
-            ),
-          ),
+          Expanded(child: Text(value, style: const TextStyle(fontSize: 16))),
         ],
       ),
     );
   }
 
-  Widget _buildStatusButton(BuildContext context, String label, AppointmentStatus status) {
+  Widget _buildStatusButton(
+    BuildContext context,
+    String label,
+    AppointmentStatus status,
+  ) {
     return ElevatedButton(
       onPressed: () => _updateStatus(context, status),
       style: ElevatedButton.styleFrom(
@@ -249,7 +261,6 @@ class AppointmentDetailScreen extends StatelessWidget {
   void _handleMenuAction(BuildContext context, String action) {
     switch (action) {
       case 'edit':
-        // TODO: Navigate to edit screen
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Edit functionality coming soon')),
         );
@@ -265,7 +276,9 @@ class AppointmentDetailScreen extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Appointment'),
-        content: const Text('Are you sure you want to delete this appointment? This action cannot be undone.'),
+        content: const Text(
+          'Are you sure you want to delete this appointment? This action cannot be undone.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -276,7 +289,7 @@ class AppointmentDetailScreen extends StatelessWidget {
               Navigator.pop(context);
               final provider = context.read<AppointmentProvider>();
               final success = await provider.deleteAppointment(appointment.id);
-              
+
               if (context.mounted) {
                 if (success) {
                   ScaffoldMessenger.of(context).showSnackBar(

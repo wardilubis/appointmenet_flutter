@@ -35,7 +35,7 @@ class Appointment {
 
   // Helper method to get formatted date
   String get formattedDate => '${hari.day}/${hari.month}/${hari.year}';
-  
+
   // Helper method to get status color
   AppointmentStatus get appointmentStatus {
     switch (status.toLowerCase()) {
@@ -53,9 +53,4 @@ class Appointment {
   }
 }
 
-enum AppointmentStatus {
-  pending,
-  approved,
-  rejected,
-  completed,
-}
+enum AppointmentStatus { pending, approved, rejected, completed }

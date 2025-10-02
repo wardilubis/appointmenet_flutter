@@ -36,6 +36,9 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
+              setState(() {
+                _selectedStatus = null;
+              });
               context.read<AppointmentProvider>().fetchAppointments();
             },
           ),
@@ -44,48 +47,56 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Consumer<AppointmentProvider>(
         builder: (context, appointmentProvider, child) {
           if (appointmentProvider.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (appointmentProvider.errorMessage != null) {
             return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.error,
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          size: 48,
+                          color: Colors.red,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Error',
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          appointmentProvider.errorMessage!,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () {
+                            appointmentProvider.clearError();
+                            appointmentProvider.fetchAppointments();
+                          },
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Error loading appointments',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    appointmentProvider.errorMessage!,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      appointmentProvider.clearError();
-                      appointmentProvider.fetchAppointments();
-                    },
-                    child: const Text('Retry'),
-                  ),
-                ],
+                ),
               ),
             );
           }
 
-          final appointments = _selectedStatus != null
-              ? appointmentProvider.getAppointmentsByStatus(_selectedStatus!)
-              : appointmentProvider.appointments;
+          // Appointments sudah difilter dari API, jadi langsung gunakan data dari provider
+          final appointments = appointmentProvider.appointments;
 
           return Column(
             children: [
@@ -106,7 +117,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     Expanded(
                       child: _buildStatCard(
                         'Today',
-                        appointmentProvider.getTodaysAppointments().length.toString(),
+                        appointmentProvider
+                            .getTodaysAppointments()
+                            .length
+                            .toString(),
                         Colors.green,
                         Icons.today,
                       ),
@@ -115,7 +129,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     Expanded(
                       child: _buildStatCard(
                         'Pending',
-                        appointmentProvider.getAppointmentsByStatus(AppointmentStatus.pending).length.toString(),
+                        appointmentProvider
+                            .getAppointmentsByStatus(AppointmentStatus.pending)
+                            .length
+                            .toString(),
                         Colors.orange,
                         Icons.pending,
                       ),
@@ -123,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              
+
               // Status Filter
               StatusFilterChips(
                 selectedStatus: _selectedStatus,
@@ -131,9 +148,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   setState(() {
                     _selectedStatus = status;
                   });
+
+                  if (status == null) {
+                    // Show all appointments
+                    context.read<AppointmentProvider>().fetchAppointments();
+                  } else {
+                    // Filter by status menggunakan API
+                    context
+                        .read<AppointmentProvider>()
+                        .fetchAppointmentsByStatusFromAPI(status.name);
+                  }
                 },
               ),
-              
+
               // Appointments List
               Expanded(
                 child: appointments.isEmpty
@@ -151,16 +178,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               _selectedStatus != null
                                   ? 'No ${_selectedStatus!.name} appointments'
                                   : 'No appointments found',
-                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                color: Colors.grey[600],
-                              ),
+                              style: Theme.of(context).textTheme.headlineSmall
+                                  ?.copyWith(color: Colors.grey[600]),
                             ),
                             const SizedBox(height: 8),
                             Text(
                               'Create your first appointment to get started',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Colors.grey[500],
-                              ),
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: Colors.grey[500]),
                             ),
                           ],
                         ),
@@ -205,7 +230,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildStatCard(String title, String value, Color color, IconData icon) {
+  Widget _buildStatCard(
+    String title,
+    String value,
+    Color color,
+    IconData icon,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -222,10 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(width: 8),
               Text(
                 title,
-                style: TextStyle(
-                  color: color,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: TextStyle(color: color, fontWeight: FontWeight.w500),
               ),
             ],
           ),

@@ -1,25 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/appointment.dart';
+import '../utils/time_formatter.dart';
 
 class AppointmentCard extends StatelessWidget {
   final Appointment appointment;
   final VoidCallback? onTap;
 
-  const AppointmentCard({
-    super.key,
-    required this.appointment,
-    this.onTap,
-  });
+  const AppointmentCard({super.key, required this.appointment, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
@@ -41,12 +36,19 @@ class AppointmentCard extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(appointment.appointmentStatus).withOpacity(0.1),
+                      color: _getStatusColor(
+                        appointment.appointmentStatus,
+                      ).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: _getStatusColor(appointment.appointmentStatus).withOpacity(0.3),
+                        color: _getStatusColor(
+                          appointment.appointmentStatus,
+                        ).withOpacity(0.3),
                       ),
                     ),
                     child: Text(
@@ -60,17 +62,13 @@ class AppointmentCard extends StatelessWidget {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Professor info
               Row(
                 children: [
-                  Icon(
-                    Icons.school,
-                    size: 16,
-                    color: Colors.grey[600],
-                  ),
+                  Icon(Icons.school, size: 16, color: Colors.grey[600]),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -84,9 +82,9 @@ class AppointmentCard extends StatelessWidget {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               // Date and time info
               Row(
                 children: [
@@ -118,72 +116,48 @@ class AppointmentCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        appointment.waktu,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[700],
-                        ),
+                        TimeFormatter.formatTimeForDisplay(appointment.waktu),
+                        style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                       ),
                     ],
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               // Contact info
               Row(
                 children: [
-                  Icon(
-                    Icons.email,
-                    size: 16,
-                    color: Colors.grey[600],
-                  ),
+                  Icon(Icons.email, size: 16, color: Colors.grey[600]),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       appointment.emailPemohon,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[700],
-                      ),
+                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   const SizedBox(width: 16),
-                  Icon(
-                    Icons.phone,
-                    size: 16,
-                    color: Colors.grey[600],
-                  ),
+                  Icon(Icons.phone, size: 16, color: Colors.grey[600]),
                   const SizedBox(width: 8),
                   Text(
                     appointment.nomorHpPemohon,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[700],
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Footer with created date
               Row(
                 children: [
-                  Icon(
-                    Icons.schedule,
-                    size: 14,
-                    color: Colors.grey[500],
-                  ),
+                  Icon(Icons.schedule, size: 14, color: Colors.grey[500]),
                   const SizedBox(width: 4),
                   Text(
                     'Created ${DateFormat('MMM dd, HH:mm').format(appointment.createdAt)}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[500],
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                   ),
                   const Spacer(),
                   Icon(

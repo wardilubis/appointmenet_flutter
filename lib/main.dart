@@ -13,9 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AppointmentProvider()),
-      ],
+      providers: [ChangeNotifierProvider(create: (_) => AppointmentProvider())],
       child: MaterialApp(
         title: 'Appointment Manager',
         debugShowCheckedModeBanner: false,
@@ -25,10 +23,7 @@ class MyApp extends StatelessWidget {
             brightness: Brightness.light,
           ),
           useMaterial3: true,
-          appBarTheme: const AppBarTheme(
-            centerTitle: true,
-            elevation: 0,
-          ),
+          appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
           cardTheme: CardThemeData(
             elevation: 2,
             shape: RoundedRectangleBorder(

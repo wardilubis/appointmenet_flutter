@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/appointment_provider.dart';
+import '../utils/time_formatter.dart';
 
 class CreateAppointmentScreen extends StatefulWidget {
   const CreateAppointmentScreen({super.key});
 
   @override
-  State<CreateAppointmentScreen> createState() => _CreateAppointmentScreenState();
+  State<CreateAppointmentScreen> createState() =>
+      _CreateAppointmentScreenState();
 }
 
 class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
@@ -17,9 +19,9 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
   final _phoneController = TextEditingController();
   final _professorController = TextEditingController();
   final _timeController = TextEditingController();
-  
+
   DateTime? _selectedDate;
-  
+
   // List of available professors (you can make this dynamic from API)
   final List<String> _professors = [
     'Prof. Dr. Ahmad Rahman',
@@ -28,18 +30,15 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
     'Prof. Dr. Maria Christina',
     'Prof. Dr. Rizki Pratama',
   ];
-  
-  // List of available time slots
-  final List<String> _timeSlots = [
-    '08:00 - 09:00',
-    '09:00 - 10:00',
-    '10:00 - 11:00',
-    '11:00 - 12:00',
-    '13:00 - 14:00',
-    '14:00 - 15:00',
-    '15:00 - 16:00',
-    '16:00 - 17:00',
-  ];
+
+  // Get time slots dari TimeFormatter
+  late List<Map<String, String>> _timeSlots;
+
+  @override
+  void initState() {
+    super.initState();
+    _timeSlots = TimeFormatter.getTimeSlots();
+  }
 
   @override
   void dispose() {
@@ -70,7 +69,7 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
                   // Personal Information Section
                   _buildSectionTitle('Personal Information'),
                   const SizedBox(height: 16),
-                  
+
                   _buildTextFormField(
                     controller: _nameController,
                     label: 'Full Name',
@@ -83,9 +82,9 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
                       return null;
                     },
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   _buildTextFormField(
                     controller: _emailController,
                     label: 'Email Address',
@@ -96,15 +95,17 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
                       }
-                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                      if (!RegExp(
+                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                      ).hasMatch(value)) {
                         return 'Please enter a valid email address';
                       }
                       return null;
                     },
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   _buildTextFormField(
                     controller: _phoneController,
                     label: 'Phone Number',
@@ -118,15 +119,17 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
                       return null;
                     },
                   ),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   // Appointment Details Section
                   _buildSectionTitle('Appointment Details'),
                   const SizedBox(height: 16),
-                  
+
                   _buildDropdownField(
-                    value: _professorController.text.isEmpty ? null : _professorController.text,
+                    value: _professorController.text.isEmpty
+                        ? null
+                        : _professorController.text,
                     label: 'Select Professor',
                     icon: Icons.school,
                     items: _professors,
@@ -142,39 +145,25 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
                       return null;
                     },
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   _buildDatePickerField(),
-                  
+
                   const SizedBox(height: 16),
-                  
-                  _buildDropdownField(
-                    value: _timeController.text.isEmpty ? null : _timeController.text,
-                    label: 'Select Time Slot',
-                    icon: Icons.access_time,
-                    items: _timeSlots,
-                    onChanged: (value) {
-                      setState(() {
-                        _timeController.text = value ?? '';
-                      });
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please select a time slot';
-                      }
-                      return null;
-                    },
-                  ),
-                  
+
+                  _buildTimeSlotDropdown(),
+
                   const SizedBox(height: 32),
-                  
+
                   // Submit Button
                   SizedBox(
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: appointmentProvider.isLoading ? null : _submitForm,
+                      onPressed: appointmentProvider.isLoading
+                          ? null
+                          : _submitForm,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
@@ -188,7 +177,9 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
                               width: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
                               ),
                             )
                           : const Text(
@@ -212,10 +203,7 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-      ),
+      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
     );
   }
 
@@ -235,9 +223,7 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
         labelText: label,
         hintText: hint,
         prefixIcon: Icon(icon),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
@@ -263,9 +249,7 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
@@ -275,12 +259,44 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
         ),
       ),
       items: items.map((String item) {
-        return DropdownMenuItem<String>(
-          value: item,
-          child: Text(item),
-        );
+        return DropdownMenuItem<String>(value: item, child: Text(item));
       }).toList(),
       onChanged: onChanged,
+    );
+  }
+
+  Widget _buildTimeSlotDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _timeController.text.isEmpty ? null : _timeController.text,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please select a time slot';
+        }
+        return null;
+      },
+      decoration: InputDecoration(
+        labelText: 'Select Time Slot',
+        prefixIcon: const Icon(Icons.access_time),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.primary,
+            width: 2,
+          ),
+        ),
+      ),
+      items: _timeSlots.map((timeSlot) {
+        return DropdownMenuItem<String>(
+          value: timeSlot['backend'], // Gunakan format backend untuk value
+          child: Text(timeSlot['display']!), // Tampilkan format user-friendly
+        );
+      }).toList(),
+      onChanged: (String? value) {
+        setState(() {
+          _timeController.text = value ?? '';
+        });
+      },
     );
   }
 
@@ -300,9 +316,7 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
             ? DateFormat('EEEE, MMM dd, yyyy').format(_selectedDate!)
             : 'Tap to select date',
         prefixIcon: const Icon(Icons.calendar_today),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
@@ -331,7 +345,7 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate() && _selectedDate != null) {
       final appointmentProvider = context.read<AppointmentProvider>();
-      
+
       final success = await appointmentProvider.createAppointment(
         namaPemohon: _nameController.text.trim(),
         emailPemohon: _emailController.text.trim(),
@@ -353,7 +367,10 @@ class _CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(appointmentProvider.errorMessage ?? 'Failed to create appointment'),
+              content: Text(
+                appointmentProvider.errorMessage ??
+                    'Failed to create appointment',
+              ),
               backgroundColor: Colors.red,
             ),
           );

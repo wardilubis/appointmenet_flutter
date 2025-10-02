@@ -1,16 +1,101 @@
-# appointmenet_flutter
+# Appointment Flutter App
 
-A new Flutter project.
+A cross-platform appointment management application built with Flutter, supporting mobile (Android/iOS), web, desktop (Windows/macOS/Linux) platforms.
+
+## Features
+
+- 📱 Cross-platform compatibility (Mobile, Web, Desktop)
+- 🎨 Modern Material Design UI
+- ⚡ Fast and responsive user interface
+- 🔄 Hot reload for rapid development
+
+## Platforms Supported
+
+- ✅ Android
+- ✅ iOS
+- ✅ Web
+- ✅ Windows
+- ✅ macOS
+- ✅ Linux
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+- Flutter SDK (>=3.9.2)
+- Dart SDK
+- IDE (VS Code, Android Studio, or IntelliJ)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Installation
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Clone the repository:
+```bash
+git clone https://github.com/WardiLubis/appointmenet_flutter.git
+cd appointmenet_flutter
+```
+
+2. Install dependencies:
+```bash
+flutter pub get
+```
+
+3. Run the app:
+```bash
+# For mobile (Android/iOS)
+flutter run
+
+# For web
+flutter run -d chrome
+
+# For desktop
+flutter run -d windows  # or macos/linux
+```
+
+### Building for Production
+
+```bash
+# Android APK
+flutter build apk
+
+# iOS
+flutter build ios
+
+# Web
+flutter build web
+
+# Windows
+flutter build windows
+```
+
+## Project Structure
+
+```
+lib/
+├── main.dart          # Entry point
+└── ...               # Additional app files
+
+web/                  # Web-specific files
+android/             # Android-specific files
+ios/                 # iOS-specific files
+windows/             # Windows-specific files
+macos/               # macOS-specific files
+linux/               # Linux-specific files
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+WardiLubis - saifulwardi@gmail.com
+
+Project Link: [https://github.com/WardiLubis/appointmenet_flutter](https://github.com/WardiLubis/appointmenet_flutter)
